@@ -24,42 +24,68 @@ keys.addEventListener('click', (e) => {
         } else {
             display.textContent = displayedNum + keyContent;
         }
-     } 
+        calculator.dataset.previousKeyType = 'number';
+    } 
 
        //ACTION KEY
-     if (action === 'add' ||
+     if (
+           action === 'add' ||
            action === 'subtract' ||
            action === 'multiply' ||
            action === 'devide'
      ){
+         const firstValue = calculator.dataset.firstValue;
+         const operator = calculator.dataset.operator;
+         const secondValue = displayedNum;
+
+         //CHECK FOR firstValue AND operator BECAUSE secondValue IS ALWAYS EXISTS   
+         if (
+             firstValue &&
+             operator &&
+             previousKeyType !== 'operator'
+             ) {
+             const calcValue = calculate(firstValue, operator, secondValue);
+             display.textContent = calcValue;
+
+             //UPDATE CALCULATE VALUE AS firstValue
+             calculator.dataset.firstValue = calcValue;
+         } else {
+             //IF THERE ARE NO CALCULATIONS, SET displayedNum AS THE firstValue
+             calculator.dataset.firstValue = displayedNum;
+         }
+
         key.classList.add('.is-depressed')
         //ADD CUSTOM ATTRIBUTE
         calculator.dataset.previousKeyType = 'operator';
-        calculator.dataset.firstValue = displayedNum;
         calculator.dataset.operator = action;
      }
 
      if (action === 'decimal') {
-         display.textContent = displayedNum + '.'
+         if (!displayedNum.includes('.')){
+         display.textContent = displayedNum + '.';
+     }  else if (previousKeyType === 'decimal') {
+         display.textContent = '0';
      }
+         calculator.dataset.previousKeyType = 'decimal';
+    }
       //CLEAR
      if (action === 'clear') {
-         console.log('clear key');
+         calculator.dataset.previousKeyType = 'clear';
      }
 
 
      //CALCULATE FUNCTION
      const calculate = (n1, operator, n2) => {
-         let = '';
+         let  result = '';
 
          if (operator === 'add') {
              result = parseFloat(n1) + parseFloat(n2);
          } else if (operator === 'subtract') {
-             result = n1 - n2;
+             result = parseFloat(n1) - parseFloat(n2);
          } else if (operator === 'multiply') {
-             result = n1 * n2;
+             result = parseFloat(n1) * parseFloat(n2);
          } else if (operator === 'devide') {
-             result = n1 / n2;
+             result = parseFloat(n1) / parseFloat(n2);
          }
 
          return result;
@@ -70,8 +96,10 @@ keys.addEventListener('click', (e) => {
          const firstValue = calculator.dataset.firstValue;
          const operator = calculator.dataset.operator;
          const secondValue = displayedNum;
-
+    if (firstValue) {
          display.textContent = calculate(firstValue, operator, secondValue);
+    }
+         calculator.dataset.previousKeyType = 'calculate';
         }
         
     }
